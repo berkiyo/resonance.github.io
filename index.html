@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance - Slowed & Reverb App</title>
+    <meta name="description" content="Resonance is a modern slowed & reverb app for iOS and Android. Shape the vibe, save presets, and export your sound with style.">
+    <meta name="theme-color" content="#0b0713" id="theme-color-meta">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/app-icon.png">
+    <link rel="apple-touch-icon" href="images/app-icon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Resonance - Slowed & Reverb App">
+    <meta property="og:description" content="Create slowed & reverb edits with a clean, modern workflow. Available on iOS and Android.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://resonance.github.io">
+    <meta property="og:image" content="https://resonance.github.io/images/app-icon.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Resonance - Slowed & Reverb App">
+    <meta name="twitter:description" content="Create slowed & reverb edits with a clean, modern workflow. Available on iOS and Android.">
+    <meta name="twitter:image" content="https://resonance.github.io/images/app-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Dark theme (default) */
+        :root {
+            --bg-primary: #0b0713;
+            --bg-secondary: #130a21;
+            --bg-tertiary: #1b1130;
+            --text-primary: #ffffff;
+            --text-secondary: #c6b8e6;
+            --text-tertiary: #9b8fbb;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #c084fc;
+            --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #a855f7 45%, #e879f9 100%);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --glow: 0 0 60px rgba(168, 85, 247, 0.2);
+            --nav-bg: rgba(11, 7, 19, 0.8);
+            --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            --app-store-btn-bg: #ffffff;
+            --app-store-btn-text: #0b0713;
+            --app-store-btn-shadow: 0 10px 30px rgba(255, 255, 255, 0.12);
+            --gradient-orb-1: rgba(168, 85, 247, 0.18);
+            --gradient-orb-2: rgba(236, 72, 153, 0.12);
+        }
+
+        /* Light theme */
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f4fb;
+            --bg-tertiary: #eee9f7;
+            --text-primary: #1f1337;
+            --text-secondary: #5f4c85;
+            --text-tertiary: #8b7bb0;
+            --border-color: rgba(36, 24, 61, 0.08);
+            --glow: 0 0 60px rgba(168, 85, 247, 0.12);
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --card-shadow: 0 25px 50px rgba(36, 24, 61, 0.08);
+            --app-store-btn-bg: #1f1337;
+            --app-store-btn-text: #ffffff;
+            --app-store-btn-shadow: 0 10px 30px rgba(36, 24, 61, 0.18);
+            --gradient-orb-1: rgba(168, 85, 247, 0.1);
+            --gradient-orb-2: rgba(236, 72, 153, 0.08);
+        }
+
+        /* System preference detection */
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) {
+                --bg-primary: #ffffff;
+                --bg-secondary: #f7f4fb;
+                --bg-tertiary: #eee9f7;
+                --text-primary: #1f1337;
+                --text-secondary: #5f4c85;
+                --text-tertiary: #8b7bb0;
+                --border-color: rgba(36, 24, 61, 0.08);
+                --glow: 0 0 60px rgba(168, 85, 247, 0.12);
+                --nav-bg: rgba(255, 255, 255, 0.85);
+                --card-shadow: 0 25px 50px rgba(36, 24, 61, 0.08);
+                --app-store-btn-bg: #1f1337;
+                --app-store-btn-text: #ffffff;
+                --app-store-btn-shadow: 0 10px 30px rgba(36, 24, 61, 0.18);
+                --gradient-orb-1: rgba(168, 85, 247, 0.1);
+                --gradient-orb-2: rgba(236, 72, 153, 0.08);
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Gradient background orbs */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-gradient::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 40%;
+            height: 40%;
+            background: radial-gradient(circle, var(--gradient-orb-1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+            transition: background 0.3s;
+        }
+
+        .bg-gradient::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, var(--gradient-orb-2) 0%, transparent 70%);
+            animation: float 25s ease-in-out infinite reverse;
+            transition: background 0.3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(5%, 5%); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a.btn-primary {
+            color: white;
+        }
+
+        .nav-links a.btn-primary:hover {
+            color: white;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-primary);
+            fill: none;
+            stroke-width: 2;
+            transition: stroke 0.3s;
+        }
+
+        .theme-toggle .sun-icon {
+            display: none;
+        }
+
+        .theme-toggle .moon-icon {
+            display: block;
+        }
+
+        [data-theme="light"] .theme-toggle .sun-icon,
+        :root:not([data-theme="dark"]) .theme-toggle .sun-icon {
+            display: block;
+        }
+
+        [data-theme="light"] .theme-toggle .moon-icon,
+        :root:not([data-theme="dark"]) .theme-toggle .moon-icon {
+            display: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .theme-toggle .sun-icon {
+                display: none;
+            }
+            :root:not([data-theme="light"]) .theme-toggle .moon-icon {
+                display: block;
+            }
+        }
+
+        [data-theme="dark"] .theme-toggle .sun-icon {
+            display: none !important;
+        }
+
+        [data-theme="dark"] .theme-toggle .moon-icon {
+            display: block !important;
+        }
+
+        [data-theme="light"] .theme-toggle .sun-icon {
+            display: block !important;
+        }
+
+        [data-theme="light"] .theme-toggle .moon-icon {
+            display: none !important;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(168, 85, 247, 0.45);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 560px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.75rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            transition: color 0.3s;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .app-store-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            background: var(--app-store-btn-bg);
+            color: var(--app-store-btn-text);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .app-store-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--app-store-btn-shadow);
+        }
+
+        .app-store-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .app-store-btn .text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.2;
+        }
+
+        .app-store-btn .text small {
+            font-size: 0.65rem;
+            opacity: 0.7;
+        }
+
+        .app-store-btn .text strong {
+            font-size: 1rem;
+        }
+
+        /* Phone Mockup */
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 300px;
+            box-shadow: none;
+            transition: all 0.3s;
+        }
+
+        .phone-mockup img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 0;
+        }
+
+        .phone-glow {
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-4px);
+            box-shadow: var(--glow);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            transition: color 0.3s;
+        }
+
+        /* Devices Section */
+        .devices {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .device-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .device-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-4px);
+            box-shadow: var(--glow);
+        }
+
+        .device-visual {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .device-visual img {
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            border-radius: 14px;
+            display: block;
+        }
+
+        /* Pro Section */
+        .pro-section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .pro-card {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.16) 0%, rgba(236, 72, 153, 0.12) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 24px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.6), transparent);
+        }
+
+        .pro-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent-gradient);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .pro-card h2 {
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .pro-card > p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+            transition: color 0.3s;
+        }
+
+        .pro-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .pro-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .pro-feature svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent-primary);
+            stroke-width: 2.5;
+            flex-shrink: 0;
+        }
+
+        .pro-feature span {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        /* Studio Section */
+        .studio {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .studio-content h2 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .studio-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            transition: color 0.3s;
+        }
+
+        .studio-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .studio-list li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+
+        .studio-list svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--accent-primary);
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .studio-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mix-icon {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--glow);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .mix-icon svg {
+            width: 100px;
+            height: 100px;
+            stroke: white;
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 60px rgba(168, 85, 247, 0.32); }
+            50% { box-shadow: 0 0 100px rgba(168, 85, 247, 0.5); }
+        }
+
+        /* CTA Section */
+        .cta {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            transition: color 0.3s;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            transition: border-color 0.3s;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+            transition: color 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .phone-mockup {
+                width: 280px;
+            }
+
+            .studio-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .studio-list {
+                align-items: center;
+            }
+
+            .studio-visual {
+                order: -1;
+            }
+
+            .nav-links a:not(.btn):not(.theme-toggle) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .features, .devices, .pro-section, .studio, .cta {
+                padding: 4rem 1.5rem;
+            }
+
+            .pro-card {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <img src="images/app-icon.png" alt="Resonance">
+                </div>
+                Resonance
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#platforms">Platforms</a>
+                <a href="#studio">Studio</a>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <a href="#download" class="btn btn-primary">Download</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="16" r="3"/>
+                    </svg>
+                    Slowed + Reverb for iOS & Android
+                </div>
+                <h1>Stretch the vibe with <span>Resonance</span></h1>
+                <p>Create slowed & reverb edits with clean, intuitive controls. Dial in tempo, space, and tone, then export your sound in seconds.</p>
+                <div class="hero-buttons">
+                    <a href="https://apps.apple.com/au/app/resonance-slowed-reverb/id6757075731" class="app-store-btn" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span class="text">
+                            <small>Download on the</small>
+                            <strong>App Store</strong>
+                        </span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=com.polydez.resonance&hl=en_AU" class="app-store-btn" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4.5 3.5v17l12-8.5-12-8.5zm12.9 7.34 2.1-1.2a1.2 1.2 0 0 1 1.2 2.08l-2.1 1.2-1.2-.68zm0 2.32 1.2-.68 2.1 1.2a1.2 1.2 0 0 1-1.2 2.08l-2.1-1.2-1.2-.68z"/>
+                        </svg>
+                        <span class="text">
+                            <small>Get it on</small>
+                            <strong>Google Play</strong>
+                        </span>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-glow"></div>
+                <div class="phone-mockup">
+                    <img src="images/Resonance-Screenshot-1.png" alt="Resonance app preview">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Everything you need to shape the mood</h2>
+                <p>Designed for fast edits, clean exports, and a modern creative flow.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 12h16"/>
+                            <path d="M4 6h10"/>
+                            <path d="M4 18h7"/>
+                        </svg>
+                    </div>
+                    <h3>Tempo Control</h3>
+                    <p>Slow tracks smoothly while keeping the mix clean and consistent.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 3v9l6 3"/>
+                        </svg>
+                    </div>
+                    <h3>Reverb Space</h3>
+                    <p>Add depth and atmosphere with a warm, modern reverb tail.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="14" rx="2"/>
+                            <path d="M7 18h10"/>
+                        </svg>
+                    </div>
+                    <h3>Instant Preview</h3>
+                    <p>Hear changes in real time as you dial the perfect vibe.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 5v14"/>
+                            <path d="M5 12h14"/>
+                        </svg>
+                    </div>
+                    <h3>Save Presets</h3>
+                    <p>Keep your favorite settings ready for your next edit.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 3l4 4-4 4-4-4 4-4z"/>
+                            <path d="M6 13l6 6 6-6"/>
+                        </svg>
+                    </div>
+                    <h3>Clean Exports</h3>
+                    <p>Export audio ready for sharing across your favorite platforms.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2a10 10 0 1 0 10 10"/>
+                            <path d="M22 2l-10 10"/>
+                        </svg>
+                    </div>
+                    <h3>Minimal Interface</h3>
+                    <p>Focused controls keep you in the flow from start to finish.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Devices Section -->
+    <section class="devices" id="platforms">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Built for iOS and Android</h2>
+                <p>A consistent Resonance experience across the devices you use every day.</p>
+            </div>
+            <div class="devices-grid">
+                <div class="device-card">
+                    <div class="device-visual">
+                        <img src="images/Resonance-Screenshot-2.png" alt="Resonance on iOS">
+                    </div>
+                    <h3>iOS</h3>
+                    <p>Optimized for iPhone with a clean, Apple-like interface and fast exports.</p>
+                </div>
+                <div class="device-card">
+                    <div class="device-visual">
+                        <img src="images/Resonance-Screenshot-3.png" alt="Resonance on Android">
+                    </div>
+                    <h3>Android</h3>
+                    <p>Designed for Android devices with smooth controls and a deep purple glow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pro Section -->
+    <section class="pro-section">
+        <div class="pro-card">
+            <div class="pro-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                CREATOR PACK
+            </div>
+            <h2>Go deeper with premium tools</h2>
+            <p>Unlock extra controls and creative flexibility when you want to push the sound further.</p>
+            <div class="pro-features">
+                <div class="pro-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Expanded preset library</span>
+                </div>
+                <div class="pro-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>More reverb textures</span>
+                </div>
+                <div class="pro-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Extra export options</span>
+                </div>
+                <div class="pro-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Fine-tune mix controls</span>
+                </div>
+                <div class="pro-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Save more favorites</span>
+                </div>
+                <div class="pro-feature">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Priority updates</span>
+                </div>
+            </div>
+            <a href="#download" class="btn btn-primary">Explore Creator Pack</a>
+        </div>
+    </section>
+
+    <!-- Studio Section -->
+    <section class="studio" id="studio">
+        <div class="section-container">
+            <div class="studio-grid">
+                <div class="studio-content">
+                    <h2>Designed to keep you in the zone</h2>
+                    <p>Resonance keeps the workflow focused so your sound stays front and center.</p>
+                    <ul class="studio-list">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            Clean, minimal layout
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M7 7h10v10H7z"/>
+                            </svg>
+                            Focused controls for quick edits
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            Built for fast iteration
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M3 12h18"/>
+                                <path d="M7 8h10"/>
+                                <path d="M9 16h6"/>
+                            </svg>
+                            Consistent across platforms
+                        </li>
+                    </ul>
+                </div>
+                <div class="studio-visual">
+                    <div class="mix-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 8h16"/>
+                            <path d="M4 16h16"/>
+                            <circle cx="9" cy="8" r="2"/>
+                            <circle cx="15" cy="16" r="2"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="download">
+        <div class="section-container">
+            <h2>Ready to slow it down?</h2>
+            <p>Download Resonance and craft your next slowed & reverb edit in minutes.</p>
+            <div class="hero-buttons">
+                <a href="https://apps.apple.com/au/app/resonance-slowed-reverb/id6757075731" class="app-store-btn" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <span class="text">
+                        <small>Download on the</small>
+                        <strong>App Store</strong>
+                    </span>
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.polydez.resonance&hl=en_AU" class="app-store-btn" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.5 3.5v17l12-8.5-12-8.5zm12.9 7.34 2.1-1.2a1.2 1.2 0 0 1 1.2 2.08l-2.1 1.2-1.2-.68zm0 2.32 1.2-.68 2.1 1.2a1.2 1.2 0 0 1-1.2 2.08l-2.1-1.2-1.2-.68z"/>
+                    </svg>
+                    <span class="text">
+                        <small>Get it on</small>
+                        <strong>Google Play</strong>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <img src="images/app-icon.png" alt="Resonance">
+                </div>
+                Resonance
+            </a>
+            <div class="footer-links">
+                <a href="https://www.polydez.com/resonance/" target="_blank" rel="noopener">Privacy Policy</a>
+                <a href="https://www.polydez.com/resonance/" target="_blank" rel="noopener">Terms of Service</a>
+                <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">EULA</a>
+            </div>
+            <p class="footer-copy">&copy; 2025 Resonance. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const toggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            const metaThemeColor = document.getElementById('theme-color-meta');
+
+            // Check for saved preference, otherwise use system preference
+            function getPreferredTheme() {
+                const saved = localStorage.getItem('theme');
+                if (saved) return saved;
+                return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+            }
+
+            function setTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+
+                // Update meta theme color
+                if (metaThemeColor) {
+                    metaThemeColor.setAttribute('content', theme === 'light' ? '#ffffff' : '#0b0713');
+                }
+            }
+
+            // Set initial theme
+            const initialTheme = getPreferredTheme();
+            if (localStorage.getItem('theme')) {
+                setTheme(initialTheme);
+            }
+
+            // Toggle theme on button click
+            toggle.addEventListener('click', function() {
+                const currentTheme = html.getAttribute('data-theme') || getPreferredTheme();
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+            });
+
+            // Listen for system preference changes
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+                if (!localStorage.getItem('theme')) {
+                    // Only auto-switch if user hasn't manually set a preference
+                    setTheme(e.matches ? 'light' : 'dark');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
