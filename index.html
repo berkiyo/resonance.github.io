@@ -609,6 +609,78 @@
             display: block;
         }
 
+        .platform-showcase {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .platform-shots {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+
+        .platform-shot {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .platform-shot img {
+            width: 100%;
+            height: auto;
+            border-radius: 18px;
+            display: block;
+        }
+
+        .platform-copy {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .platform-copy h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .platform-copy p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .platform-copy ul {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .platform-copy li {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            color: var(--text-primary);
+            font-size: 0.98rem;
+        }
+
+        .platform-copy li svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent-primary);
+            stroke-width: 2.2;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
         /* Pro Section */
         .pro-section {
             position: relative;
@@ -879,6 +951,15 @@
             .nav-links a:not(.btn):not(.theme-toggle) {
                 display: none;
             }
+
+            .platform-showcase {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .platform-copy ul {
+                justify-items: center;
+            }
         }
 
         @media (max-width: 600px) {
@@ -897,6 +978,10 @@
             .footer-container {
                 flex-direction: column;
                 text-align: center;
+            }
+
+            .platform-shots {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1062,20 +1147,44 @@
                 <h2>Built for iOS and Android</h2>
                 <p>A consistent Resonance experience across the devices you use every day.</p>
             </div>
-            <div class="devices-grid">
-                <div class="device-card">
-                    <div class="device-visual">
-                        <img src="images/Resonance-Screenshot-2.png" alt="Resonance on iOS">
+            <div class="platform-showcase">
+                <div class="platform-shots">
+                    <div class="platform-shot">
+                        <img src="images/Resonance-Screenshot-2.png" alt="Resonance screenshot on iOS">
                     </div>
-                    <h3>iOS</h3>
-                    <p>Optimized for iPhone with a clean, Apple-like interface and fast exports.</p>
+                    <div class="platform-shot">
+                        <img src="images/Resonance-Screenshot-3.png" alt="Resonance screenshot on Android">
+                    </div>
                 </div>
-                <div class="device-card">
-                    <div class="device-visual">
-                        <img src="images/Resonance-Screenshot-3.png" alt="Resonance on Android">
-                    </div>
-                    <h3>Android</h3>
-                    <p>Designed for Android devices with smooth controls and a deep purple glow.</p>
+                <div class="platform-copy">
+                    <h3>Polished across every screen</h3>
+                    <p>Same aesthetic, same workflow. Resonance feels native everywhere while keeping your edits fast and focused.</p>
+                    <ul>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Apple-like design language with minimal chrome
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Smooth transitions and responsive controls
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Export-ready audio with one tap
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Consistent presets across iOS and Android
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1228,7 +1337,7 @@
                 <a href="https://www.polydez.com/slowed-and-reverb-app/" target="_blank" rel="noopener">Terms of Service</a>
                 <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">EULA</a>
             </div>
-            <p class="footer-copy">&copy; 2025 Resonance. All rights reserved.</p>
+            <p class="footer-copy">&copy; 2026 Resonance. All rights reserved.</p>
         </div>
     </footer>
 
